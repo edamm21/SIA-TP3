@@ -1,11 +1,20 @@
-from perceptron import SimplePerceptron
+from single_layer_perceptron import SimplePerceptron
+from multi_layer_perceptron import MultiLayerPerceptron
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 os.chdir('../')
 import json
 with open(os.getcwd() + "/input.json") as file:
-    operand = json.load(file)['FUNCTION']
+    data = json.load(file)
+    operand = data['FUNCTION']
+    alpha = data['LEARNING_RATE']
+    epochs = data['EPOCHS']
+    perceptron = data['PERCEPTRON']
 
-p = SimplePerceptron(0.5, 100)
-p.algorithm(operand)
+if(perceptron == 'SIMPLE'):
+    p = SimplePerceptron(alpha=alpha, iterations=epochs)
+    p.algorithm(operand)
+else:
+    p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1)
+    p.algorithm("XOR")
 

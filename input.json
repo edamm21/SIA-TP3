@@ -1,3 +1,6 @@
 {
-    "FUNCTION":"XOR"
+    "PERCEPTRON":"MULTI",
+    "FUNCTION":"XOR",
+    "LEARNING_RATE":0.01,
+    "EPOCHS":50
 }
