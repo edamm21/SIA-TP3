@@ -1,4 +1,5 @@
-from single_layer_perceptron import SimplePerceptron
+from file_reader import Reader
+from ej1_single_layer_perceptron import SimplePerceptron
 from multi_layer_perceptron import MultiLayerPerceptron
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -12,7 +13,7 @@ with open(os.getcwd() + "/input.json") as file:
     perceptron = data['PERCEPTRON']
 
 if(perceptron == 'SIMPLE'):
-    p = SimplePerceptron(alpha=alpha, iterations=epochs)
+    p = SimplePerceptron(alpha=alpha, iterations=epochs, linear=False, beta=0.1)
     p.algorithm(operand)
 else:
     p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1)

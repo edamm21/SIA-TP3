@@ -2,5 +2,6 @@
     "PERCEPTRON":"MULTIPLE",
     "FUNCTION":"AND",
     "LEARNING_RATE":0.01,
+    "BETA": 0.5,
     "EPOCHS":1000
 }
