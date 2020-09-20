@@ -31,8 +31,6 @@ class SimplePerceptron:
         else: return self.tanh(excitation)
 
     def update_weights(self, error, row, curr_weights):
-        print(error)
-        print(row)
         delta_ws = [error * elem for elem in row]
         if not self.linear:        
             delta_ws = [self.tanh_derivative(delta_w_i) for delta_w_i in delta_ws]
@@ -65,14 +63,17 @@ class SimplePerceptron:
                     activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
                     error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
                     fixed_diff = self.alpha * error
-                    weights = self.update_weights(fixed_diff, data[i], weights)
+                    #weights = self.update_weights(fixed_diff, data[i], weights)
+                    #delta_ws = np.dot(fixed_diff, data[i]) # [fd * d[0], fd * d[1], ...]
+                    delta_ws = [fixed_diff * data for data in data[i]]
+                    weights = [delta + weight for delta, weight in zip(delta_ws, weights)]
                     total_error += abs(error)
                 if total_error < error_min:
                     error_min = total_error
                     w_min = weights
-                else:
-                    break
+            else:
+                break
         plotter = Plotter()
-        plotter.create_plot_ej1(data, weights, operand)
+        plotter.create_plot_ej1(data, w_min, operand)
         return
 
