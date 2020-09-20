@@ -37,24 +37,24 @@ class SimplePerceptron:
         plt.xlim(map_min,map_max - 0.5)
         plt.ylim(map_min,map_max - 0.5)
 
-        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyección w < 0')
-        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyección w > 0')
+        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyeccion w < 0')
+        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyeccion w > 0')
 
         plt.legend(fontsize = 8, loc = 0)
         plt.grid(True)
         plt.show()
         return
 
-    def step(self, x): # función de activación escalón
+    def step(self, x): # funcion de activacion escalon
         if x > 0.0: return 1.0 
         if x < 0.0: return -1.0
         else: return 0.0 
 
     def get_activation(self, xi, weights):
-        excitation = 0.0 # acá voy calculando la excitación
+        excitation = 0.0 # aca voy calculando la excitacion
         for i,w in zip(xi, weights):
             excitation += i * w 
-        return self.step(excitation)   
+        return self.step(excitation)  
 
     def algorithm(self, operand):
         data = []
@@ -69,13 +69,25 @@ class SimplePerceptron:
                       [1.0, -1.0, -1.0, -1.0]]
 
         weights = np.random.rand(len(data[0]) - 1, 1)
+        error_min = 20
+        total_error = 1
         for epoch in range(self.iterations): # COTA del ppt
-            for i in range(len(data)): # tamaño del conjunto de entrenamiento
-                activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
-                error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
-                fixed_diff = self.alpha * error
-                delta_ws = np.dot(fixed_diff, data[i]) # [fd * d[0], fd * d[1], ...]
-                weights = [delta + weight for delta, weight in zip(delta_ws, weights)]
-        self.create_plot(data, weights, operand)
+            if total_error > 0:
+                total_error = 0
+                if (epoch % 100 == 0):
+                    weights = np.random.rand(len(data[0]) - 1, 1)
+                for i in range(len(data)): # tamano del conjunto de entrenamiento
+                    activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+                    error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
+                    fixed_diff = self.alpha * error
+                    delta_ws = np.dot(fixed_diff, data[i]) # [fd * d[0], fd * d[1], ...]
+                    weights = [delta + weight for delta, weight in zip(delta_ws, weights)]
+                    total_error += abs(error)
+                if total_error < error_min:
+                    error_min = total_error
+                    w_min = weights
+            else:
+                break
+        self.create_plot(data, w_min, operand)
         return
 

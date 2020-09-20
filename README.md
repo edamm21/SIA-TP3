@@ -1,6 +1,11 @@
 # SIA-TP3
 
 ## Instrucciones de configuración y ejecución
+Para usar matplotlib, instalarla
+```javascript
+pip install matplotlib
+sudo apt-get install python-tk
+```
 
 Para elegir entre las funciones lógicas a resolver por el perceptron simple, editar el archivo ```input.json``` y seleccionar la función deseada. Ejemplo:
 
