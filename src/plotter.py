@@ -8,7 +8,7 @@ class Plotter:
         ax.set_title(operand)
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-
+        
         map_min = -1.5
         map_max = 2
         res = 0.5

@@ -6,7 +6,7 @@ from plotter import Plotter
 
 class SimplePerceptron:
     
-    def __init__(self, alpha=0.01, iterations=100, linear=True, beta=0.1):
+    def __init__(self, alpha=0.01, iterations=100, linear=True, beta=0.5):
         self.alpha = alpha
         self.iterations = iterations
         self.linear = linear
@@ -21,7 +21,7 @@ class SimplePerceptron:
         return np.tanh(self.beta * x)
 
     def tanh_derivative(self, x):
-        return self.beta * (1.0 - self.tanh(x) ** 2)
+        return [self.beta * (1.0 - self.tanh(elem) ** 2) for elem in x]
 
     def get_activation(self, xi, weights):
         excitation = 0.0 # aca voy calculando la excitacion
@@ -32,8 +32,12 @@ class SimplePerceptron:
 
     def update_weights(self, error, row, curr_weights):
         delta_ws = [error * elem for elem in row]
-        if not self.linear:        
-            delta_ws = [self.tanh_derivative(delta_w_i) for delta_w_i in delta_ws]
+        if not self.linear:
+            h = 0.0
+            for i,w in zip(row, curr_weights):
+                h += i * w 
+            derivative = self.tanh_derivative(h)
+            delta_ws = [derivative * delta_w_i for delta_w_i in delta_ws]
         return [delta + weight for delta, weight in zip(delta_ws, curr_weights)]
 
     def algorithm(self, operand):
@@ -43,10 +47,13 @@ class SimplePerceptron:
                                      [1.0, -1.0,  1.0, -1.0],
                                      [1.0,  1.0, -1.0, -1.0],
                                      [1.0, -1.0, -1.0, -1.0]]
-        elif operand == 'XOR': data = [[1.0,  1.0,  1.0, -1.0],
-                                          [1.0, -1.0,  1.0,  1.0],
-                                          [1.0,  1.0, -1.0,  1.0],
-                                          [1.0, -1.0, -1.0, -1.0]]
+        elif operand == 'XOR': data = [ [1.0,  1.0,  1.0, -1.0],
+                                        [1.0, -1.0,  1.0,  1.0],
+                                        [1.0,  1.0, -1.0,  1.0],
+                                        [1.0, -1.0, -1.0, -1.0]]
+        elif operand == 'TEST': 
+            r = Reader('TEST')
+            data = r.readFile() # agarramos los datos de los txt
         else:
             r = Reader('Ej2')
             data = r.readFile() # agarramos los datos de los txt
@@ -54,6 +61,7 @@ class SimplePerceptron:
         weights = np.random.rand(len(data[0]) - 1, 1)
         error_min = 20
         total_error = 1
+        w_min = None
         for epoch in range(self.iterations): # COTA del ppt
             if total_error > 0:
                 total_error = 0
@@ -62,18 +70,22 @@ class SimplePerceptron:
                 for i in range(len(data)): # tamaño del conjunto de entrenamiento
                     activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
                     error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
+                    print(data[i][-1], activation)
                     fixed_diff = self.alpha * error
-                    #weights = self.update_weights(fixed_diff, data[i], weights)
-                    #delta_ws = np.dot(fixed_diff, data[i]) # [fd * d[0], fd * d[1], ...]
-                    delta_ws = [fixed_diff * data for data in data[i]]
-                    weights = [delta + weight for delta, weight in zip(delta_ws, weights)]
+                    weights = self.update_weights(fixed_diff, data[i][:-1], weights)
                     total_error += abs(error)
                 if total_error < error_min:
                     error_min = total_error
                     w_min = weights
             else:
                 break
-        plotter = Plotter()
-        plotter.create_plot_ej1(data, w_min, operand)
+        if operand != 'Ej2' and operand != 'TEST':
+            plotter = Plotter()
+            if w_min != None : plotter.create_plot_ej1(data, w_min, operand)
+            else: plotter.create_plot_ej1(data, weights, operand)
+        else:
+            print('Non linear data post analysis:')
+            print('epochs: {}'.format(epoch))
+            print('error: {}'.format(total_error))
         return
 

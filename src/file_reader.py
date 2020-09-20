@@ -57,3 +57,10 @@ class Reader:
             data[i][0] = 1
             data[i][-1] = (i%2 * 2) - 1
         return data
+
+    def normalize_output(self, outputs): # tengo que normalizar sino está fuera del rango de activacion de la tanh o sigmoidea
+        max_output = np.max(outputs)
+        min_output = np.min(outputs)
+        for i in range(0, len(outputs)):
+            outputs[i] =  (outputs[i] - min_output) / (max_output - min_output)
+        return outputs
