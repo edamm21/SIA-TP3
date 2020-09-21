@@ -53,13 +53,6 @@ class MultiLayerPerceptron:
         plt.show()
         return
 
-    #def g(self, x):
-    #    return 0.5 * np.tanh(2 * x) + 0.5
- 
-    #def g_derivative(self, x):
-    #    tanh = np.tanh(x)
-    #    return 0.5 * 2 * (1.0 - tanh * tanh);
-
     def g(self, x):
         return np.tanh(2 * x)
  
@@ -83,85 +76,117 @@ class MultiLayerPerceptron:
             r = Reader('Ej3')
             data = r.readFile()
                                 
-        M = self.total_layers - 1                                   # M sera el indice de la capa superior
-        nodes_per_layer = max(4, len(data[0]) - 1)                  # Cuantos nodos hay en las capas ocultas (incluye el del bias)
-        exit_nodes = 1                                              # Cuantos nodos hay en la capa superior
-        V = np.zeros((M+1, nodes_per_layer))                        # [capa, j]
-        for i in range(1, M):
-            V[i][0] = 1                                             # Bias para cada capa
-        W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)-0.5   # [capa destino, dest, origen]
-        w = np.random.rand(nodes_per_layer, len(data[0]) - 1)-0.5       # [dest, origen]
-        W[1,:,:] = np.zeros((nodes_per_layer, nodes_per_layer))
-        d = np.zeros((M+1, nodes_per_layer))
+        self.M = self.total_layers - 1                                  # M sera el indice de la capa superior
+        self.nodes_per_layer = max(4, len(data[0]) - 1)                 # Cuantos nodos hay en las capas ocultas (incluye el del bias)
+        self.exit_nodes = 1                                             # Cuantos nodos hay en la capa superior
+        self.V = np.zeros((self.M + 1, self.nodes_per_layer))           # [capa, j]
+        for i in range(1, self.M):
+            self.V[i][0] = 1                                                                # Bias para cada capa
+        self.W = np.random.rand(self.M+1, self.nodes_per_layer, self.nodes_per_layer)-0.5   # [capa destino, dest, origen]
+        w = np.random.rand(self.nodes_per_layer, len(data[0]) - 1)-0.5                           # [dest, origen]
+        self.W[1,:,:] = np.zeros((self.nodes_per_layer, self.nodes_per_layer))
+        self.d = np.zeros((self.M+1, self.nodes_per_layer))
         for orig in range(len(data[0])-1):
-            for dest in range(nodes_per_layer):
-                W[1,dest,orig] = w[dest,orig]
+            for dest in range(self.nodes_per_layer):
+                self.W[1,dest,orig] = w[dest,orig]
         
-        acceptable_error = 0.15
+        acceptable_error = 0.01
         error_min = 20
         total_error = 1
         for epoch in range(1, self.iterations):
             total_error = 0
             # Randomize W every once in a while
             if (epoch % 100000 == 99999):
-                W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)-0.5   # [capa destino, dest, origen]
+                self.W = np.random.rand(self.M+1, self.nodes_per_layer, self.nodes_per_layer)-0.5   # [capa destino, dest, origen]
                 w = np.random.rand(nodes_per_layer, len(data[0]) - 1)-0.5       # [dest, origen]
-                W[1,:,:] = np.zeros((nodes_per_layer, nodes_per_layer))
+                self.W[1,:,:] = np.zeros((self.nodes_per_layer, self.nodes_per_layer))
                 for orig in range(len(data[0])-1):
                     for dest in range(nodes_per_layer):
-                        W[1,dest,orig] = w[dest,orig]
+                        self.W[1,dest,orig] = w[dest,orig]
             np.random.shuffle(data)
             for mu in range(len(data)):
                 # Paso 2 (V0 tiene los ejemplos iniciales)
                 for k in range(len(data[0])-1):
-                    V[0][k] = data[mu][k]
+                    self.V[0][k] = data[mu][k]
                 
                 # Paso 3A (Vi tiene los resultados de cada perceptron en la capa m)
-                for m in range(1,M):
-                    for i in range(1,nodes_per_layer):
-                        hmi = self.h(m, i, nodes_per_layer, W, V)
-                        V[m][i] = self.g(hmi)
+                for m in range(1, self.M):
+                    for i in range(1, self.nodes_per_layer):
+                        hmi = self.h(m, i, self.nodes_per_layer, self.W, self.V)
+                        self.V[m][i] = self.g(hmi)
 
                 # Paso 3B (En la ultima capa habra exit_nodes en vez de nodes_per_layer)
-                for i in range(0,exit_nodes):
-                    hMi = self.h(M, i, nodes_per_layer, W, V)
-                    V[M][i] = self.g(hMi)
-                print("Expected %f\t got %f\tThis is epoch %d" %(data[mu][-1], V[M][i], epoch))
+                for i in range(0, self.exit_nodes):
+                    hMi = self.h(self.M, i, self.nodes_per_layer, self.W, self.V)
+                    self.V[self.M][i] = self.g(hMi)
+                print("Expected %f\t got %f\tThis is epoch %d" %(data[mu][-1], self.V[self.M][i], epoch))
 
                 # Paso 4 (Calculo error para capa de salida M)
-                for i in range(0,exit_nodes):
-                    hMi = self.h(M, i, nodes_per_layer, W, V)
-                    if exit_nodes == 1:
-                        d[M][i] = self.g_derivative(hMi)*(data[mu][-1] - V[M][i])
+                for i in range(0, self.exit_nodes):
+                    hMi = self.h(self.M, i, self.nodes_per_layer, self.W, self.V)
+                    if self.exit_nodes == 1:
+                        self.d[self.M][i] = self.g_derivative(hMi)*(data[mu][-1] - self.V[self.M][i])
                     else:
-                        d[M][i] = self.g_derivative(hMi)*(data[mu][-1][i] - V[M][i])
+                        self.d[self.M][i] = self.g_derivative(hMi)*(data[mu][-1][i] - self.V[self.M][i])
 
                 # Paso 5 (Retropropagar error)
-                for m in range(M,1,-1):                                             # m es la capa superior
-                    for j in range(0,nodes_per_layer):                              # Por cada j en el medio
-                        hprevmi = self.h(m-1, j, nodes_per_layer, W, V)             # hj = hj del medio
+                for m in range(self.M, 1 ,-1):                                             # m es la capa superior
+                    for j in range(0, self.nodes_per_layer):                              # Por cada j en el medio
+                        hprevmi = self.h(m-1, j, self.nodes_per_layer, self.W, self.V)             # hj = hj del medio
                         error_sum = 0
-                        for i in range(0, nodes_per_layer):                         # Por cada nodo en la capa superior
-                            error_sum += W[m,i,j] * d[m][i]                         # sumo la rama de aca hasta arriba y multiplico por el error
-                        d[m-1][j] = self.g_derivative(hprevmi) * error_sum
+                        for i in range(0, self.nodes_per_layer):                         # Por cada nodo en la capa superior
+                            error_sum += self.W[m,i,j] * self.d[m][i]                         # sumo la rama de aca hasta arriba y multiplico por el error
+                        self.d[m-1][j] = self.g_derivative(hprevmi) * error_sum
 
                 # Paso 6 (Actualizar pesos)
-                for m in range(1,M+1):
-                    for i in range(nodes_per_layer):
-                        for j in range(nodes_per_layer):
-                            delta = self.alpha * d[m][i] * V[m-1][j]
-                            W[m,i,j] = W[m,i,j] + delta
+                for m in range(1, self.M+1):
+                    for i in range(self.nodes_per_layer):
+                        for j in range(self.nodes_per_layer):
+                            delta = self.alpha * self.d[m][i] * self.V[m-1][j]
+                            self.W[m,i,j] = self.W[m,i,j] + delta
 
                 # Paso 7 (Calcular error)
-                for i in range(0,exit_nodes):
-                    if exit_nodes == 1:
-                        total_error += abs(data[mu][-1] - V[M][i])
+                for i in range(0, self.exit_nodes):
+                    if self.exit_nodes == 1:
+                        total_error += abs(data[mu][-1] - self.V[self.M][i])
                     else:
-                        total_error += abs(data[mu][-1][i] - V[M][i])
+                        total_error += abs(data[mu][-1][i] - self.V[self.M][i])
             if total_error < error_min:
                 error_min = total_error
-                w_min = W
+                self.w_min = self.W
             if total_error <= acceptable_error*len(data):
                 print("End of epoch %d, total error for this epoch was %f, below max error allowed %f" %(epoch, total_error, acceptable_error*len(data)))
                 break
+        
+        if problem == "EVEN":
+            test_data = r.readFile(test=True)
+            self.test_perceptron(test_data, self.W)
+            print('Non linear data post analysis:')
+            print('epochs: {}'.format(epoch + 1))
+            #plotter.create_plot_ej2(error_per_epoch)
         return
+
+    def test_perceptron(self, test_data, weights):
+        print('Testing perceptron...')
+        element_count = 0
+        print('+-------------------+-------------------+')
+        print('|   Desired output  |   Perceptron out  |')
+        print('+-------------------+-------------------+')
+        for row in test_data:
+            for k in range(len(row)-1):
+                self.V[0][k] = row[k]
+            
+            # Paso 3A (Vi tiene los resultados de cada perceptron en la capa m)
+            for m in range(1, self.M):
+                for i in range(1, self.nodes_per_layer):
+                    hmi = self.h(m, i, self.nodes_per_layer, self.W, self.V)
+                    self.V[m][i] = self.g(hmi)
+
+            # Paso 3B (En la ultima capa habra exit_nodes en vez de nodes_per_layer)
+            for i in range(0, self.exit_nodes):
+                hMi = self.h(self.M, i, self.nodes_per_layer, self.W, self.V)
+                self.V[self.M][i] = self.g(hMi)
+            perceptron_output = self.V[self.M][0]
+            element_count += 1
+            print('|{}|{}|{}'.format(row[-1], perceptron_output, row))
+        print('Analysis finished')

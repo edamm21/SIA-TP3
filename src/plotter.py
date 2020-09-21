@@ -31,8 +31,8 @@ class Plotter:
         plt.xlim(map_min,map_max - 0.5)
         plt.ylim(map_min,map_max - 0.5)
 
-        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyección w < 0')
-        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyección w > 0')
+        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyeccion w < 0')
+        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyeccion w > 0')
 
         plt.legend(fontsize = 8, loc = 0)
         plt.grid(True)
@@ -40,8 +40,8 @@ class Plotter:
     
     def create_plot_ej2(self, errors):
         fig,ax = plt.subplots()
-        ax.set_title('Evolución de error por época')
-        ax.set_xlabel("Época")
+        ax.set_title('Evolucion de error por epoca')
+        ax.set_xlabel("Epoca")
         ax.set_ylabel("Error")
         epochs = []
         for i in range(len(errors)):

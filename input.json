@@ -1,6 +1,6 @@
 {
-    "PERCEPTRON":"SIMPLE",
-    "FUNCTION":"Ej2",
+    "PERCEPTRON":"MULTI",
+    "FUNCTION":"EVEN",
     "LEARNING_RATE":0.01,
     "BETA": 0.5,
     "EPOCHS":1000

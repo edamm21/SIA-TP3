@@ -79,7 +79,7 @@ class SimplePerceptron:
                 total_error = 0
                 #if (epoch % 100 == 0):
                 #    weights = np.random.rand(len(data[0]) - 1, 1)
-                for i in range(len(data)): # tamaño del conjunto de entrenamiento
+                for i in range(len(data)): # tamano del conjunto de entrenamiento
                     sumatoria = self.get_sum(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
                     activation = self.get_activation(sumatoria) 
                     error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
