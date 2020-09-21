@@ -89,8 +89,8 @@ class MultiLayerPerceptron:
         V = np.zeros((M+1, nodes_per_layer))                        # [capa, j]
         for i in range(1, M):
             V[i][0] = 1                                             # Bias para cada capa
-        W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)   # [capa destino, dest, origen]
-        w = np.random.rand(nodes_per_layer, len(data[0]) - 1)       # [dest, origen]
+        W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)-0.5   # [capa destino, dest, origen]
+        w = np.random.rand(nodes_per_layer, len(data[0]) - 1)-0.5       # [dest, origen]
         W[1,:,:] = np.zeros((nodes_per_layer, nodes_per_layer))
         d = np.zeros((M+1, nodes_per_layer))
         for orig in range(len(data[0])-1):
@@ -103,7 +103,8 @@ class MultiLayerPerceptron:
             total_error = 0
             # Randomize W every once in a while
             if (epoch % 100000 == 99999):
-                W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)   # [capa destino, dest, origen]
+                W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)-0.5   # [capa destino, dest, origen]
+                w = np.random.rand(nodes_per_layer, len(data[0]) - 1)-0.5       # [dest, origen]
                 W[1,:,:] = np.zeros((nodes_per_layer, nodes_per_layer))
                 for orig in range(len(data[0])-1):
                     for dest in range(nodes_per_layer):
@@ -125,7 +126,7 @@ class MultiLayerPerceptron:
                 for i in range(0,exit_nodes):
                     hMi = self.h(M, i, nodes_per_layer, W, V)
                     V[M][i] = self.g(hMi)
-                print(V[M][i], 'expected', data[mu][-1], epoch)
+                print("Expected %f\t got %f\tThis is epoch %d" %(data[mu][-1], V[M][i], epoch))
 
                 # Paso 4 (Calculo error para capa de salida M)
                 for i in range(0,exit_nodes):
