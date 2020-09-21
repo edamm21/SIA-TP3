@@ -1,6 +1,7 @@
 import numpy as np
 import string
- 
+import random
+
 class Reader:
  
     def __init__(self, excercise):
@@ -44,7 +45,7 @@ class Reader:
         for index in range(10):                         # 10 veces
             for fila in range(height):                  # 7 veces
                 for col in range(width):                # 5 veces
-                    data[index][1+col+fila*width] = string.atoi(values_indiv[index*height+fila][col])
+                    data[index][1+col+fila*width] = int(values_indiv[index*height+fila][col])
         for i in range(len(data)):
             data[i][0] = 1
             data[i][-1] = (i%2 * 2) - 1
