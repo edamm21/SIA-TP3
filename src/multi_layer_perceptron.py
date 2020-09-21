@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt 
 import numpy as np
 import random
+from file_reader import Reader
 from datetime import datetime
 
 class MultiLayerPerceptron:
@@ -82,6 +83,10 @@ class MultiLayerPerceptron:
                                      [1.0, -1.0,  1.0, -1.0],
                                      [1.0,  1.0, -1.0, -1.0],
                                      [1.0, -1.0, -1.0, -1.0]]
+        if problem == "EVEN":
+            r = Reader('Ej3')
+            data = r.readFile()
+                                
 
         M = self.total_layers - 1                                   # M sera el indice de la capa superior
         nodes_per_layer = max(4, len(data[0]) - 1)                  # Cuantos nodos hay en las capas ocultas (incluye el del bias)
@@ -97,6 +102,7 @@ class MultiLayerPerceptron:
             for dest in range(nodes_per_layer):
                 W[1,dest,orig] = w[dest,orig]
         
+        acceptable_error = 0.15
         error_min = 20
         total_error = 1
         for epoch in range(1, self.iterations):
@@ -109,8 +115,7 @@ class MultiLayerPerceptron:
                 for orig in range(len(data[0])-1):
                     for dest in range(nodes_per_layer):
                         W[1,dest,orig] = w[dest,orig]
-
-            random.shuffle(data)
+            np.random.shuffle(data)
             for mu in range(len(data)):
                 # Paso 2 (V0 tiene los ejemplos iniciales)
                 for k in range(len(data[0])-1):
@@ -155,12 +160,13 @@ class MultiLayerPerceptron:
                 # Paso 7 (Calcular error)
                 for i in range(0,exit_nodes):
                     if exit_nodes == 1:
-                        total_error += abs(data[mu][3] - V[M][i])
+                        total_error += abs(data[mu][-1] - V[M][i])
                     else:
-                        total_error += abs(data[mu][3][i] - V[M][i])
-                if total_error < error_min:
-                    error_min = total_error
-                    w_min = W
-                if total_error <= 0:
-                    break
+                        total_error += abs(data[mu][-1][i] - V[M][i])
+            if total_error < error_min:
+                error_min = total_error
+                w_min = W
+            if total_error <= acceptable_error*len(data):
+                print("End of epoch %d, total error for this epoch was %f, below max error allowed %f" %(epoch, total_error, acceptable_error*len(data)))
+                break
         return

@@ -16,5 +16,5 @@ if(perceptron == 'SIMPLE'):
     p.algorithm(operand)
 else:
     p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1)
-    p.algorithm("XOR")
+    p.algorithm("EVEN")
 
