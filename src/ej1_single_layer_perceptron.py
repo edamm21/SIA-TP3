@@ -71,8 +71,9 @@ class SimplePerceptron:
         weights = np.random.rand(len(data[0]) - 1, 1)
         error_min = 20
         total_error = 1
-        w_min = None
+        w_min = weights
         error_per_epoch = []
+        plotter = Plotter()
         for epoch in range(self.iterations): # COTA del ppt
             if total_error > 0:
                 total_error = 0
@@ -96,7 +97,6 @@ class SimplePerceptron:
                     w_min = weights
             else:
                 break
-        plotter = Plotter()
         if operand != 'Ej2':
             if len(w_min) != 0 or w_min != None : plotter.create_plot_ej1(data, w_min, operand)
             else: plotter.create_plot_ej1(data, weights, operand)

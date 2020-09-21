@@ -37,7 +37,6 @@ class Plotter:
         plt.legend(fontsize = 8, loc = 0)
         plt.grid(True)
         plt.show()
-        return
     
     def create_plot_ej2(self, errors):
         fig,ax = plt.subplots()
