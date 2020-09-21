@@ -52,11 +52,19 @@ class MultiLayerPerceptron:
         plt.show()
         return
 
+    #def g(self, x):
+    #    return 0.5 * np.tanh(2 * x) + 0.5
+ 
+    #def g_derivative(self, x):
+    #    tanh = np.tanh(x)
+    #    return 0.5 * 2 * (1.0 - tanh * tanh);
+
     def g(self, x):
-        return 1.0 / (1.0 + np.exp(-x))
+        return np.tanh(2 * x)
  
     def g_derivative(self, x):
-        return self.g(x) * (1.0 - self.g(x))
+        cosh2 = np.cosh(2*x) * np.cosh(2*x)
+        return 2.0 / cosh2
 
     def h(self, m, i, amount_of_nodes, W, V):
         hmi = 0
@@ -94,14 +102,14 @@ class MultiLayerPerceptron:
         for epoch in range(1, self.iterations):
             total_error = 0
             # Randomize W every once in a while
-            if (epoch % 100 == 99):
+            if (epoch % 100000 == 99999):
                 W = np.random.rand(M+1, nodes_per_layer, nodes_per_layer)   # [capa destino, dest, origen]
                 W[1,:,:] = np.zeros((nodes_per_layer, nodes_per_layer))
                 for orig in range(len(data[0])-1):
                     for dest in range(nodes_per_layer):
                         W[1,dest,orig] = w[dest,orig]
 
-
+            random.shuffle(data)
             for mu in range(len(data)):
                 # Paso 2 (V0 tiene los ejemplos iniciales)
                 for k in range(len(data[0])-1):
@@ -117,12 +125,13 @@ class MultiLayerPerceptron:
                 for i in range(0,exit_nodes):
                     hMi = self.h(M, i, nodes_per_layer, W, V)
                     V[M][i] = self.g(hMi)
+                print(V[M][i], 'expected', data[mu][-1], epoch)
 
                 # Paso 4 (Calculo error para capa de salida M)
                 for i in range(0,exit_nodes):
                     hMi = self.h(M, i, nodes_per_layer, W, V)
                     if exit_nodes == 1:
-                        d[M][i] = self.g_derivative(hMi)*(data[mu][-1] - V[M][i])    
+                        d[M][i] = self.g_derivative(hMi)*(data[mu][-1] - V[M][i])
                     else:
                         d[M][i] = self.g_derivative(hMi)*(data[mu][-1][i] - V[M][i])
 
@@ -153,6 +162,4 @@ class MultiLayerPerceptron:
                     w_min = W
                 if total_error <= 0:
                     break
-        print(V)
-        self.create_plot(data, w_min[M,:,:], problem)
         return
