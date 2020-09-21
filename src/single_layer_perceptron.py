@@ -1,93 +1,124 @@
-from matplotlib import pyplot as plt 
 import numpy as np
 import random
 from datetime import datetime
+from file_reader import Reader
+from plotter import Plotter
 
 class SimplePerceptron:
     
-    def __init__(self, alpha=0.01, iterations=100):
+    def __init__(self, alpha=0.01, iterations=100, linear=True, beta=0.5):
         self.alpha = alpha
         self.iterations = iterations
-    
-    def create_plot(self, data, weights, operand):
-        fig,ax = plt.subplots()
-        ax.set_title(operand)
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-
-        map_min = -1.5
-        map_max = 2
-        res = 0.5
-        x = np.linspace(-1.5, 2, 10) # te devuelve un intervalo entre -1.5 y 2 con numeros espaciados iguales para graficar el hiperplano
-        plt.plot(x, -((weights[0] + weights[1] * x) / weights[2]), '-g', label='Hiperplano')
-
-        positives = [[],[]]
-        negatives = [[],[]]
-        for i in range(len(data)):
-            x = data[i][1]
-            y = data[i][2]
-            desired  = data[i][-1]
-            if desired == 1:
-                positives[0].append(x)
-                positives[1].append(y)
-            else:
-                negatives[0].append(x)
-                negatives[1].append(y)
-
-        plt.xlim(map_min,map_max - 0.5)
-        plt.ylim(map_min,map_max - 0.5)
-
-        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyeccion w < 0')
-        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyeccion w > 0')
-
-        plt.legend(fontsize = 8, loc = 0)
-        plt.grid(True)
-        plt.show()
-        return
+        self.linear = linear
+        self.beta = beta
 
     def step(self, x): # funcion de activacion escalon
         if x > 0.0: return 1.0 
         if x < 0.0: return -1.0
         else: return 0.0 
 
-    def get_activation(self, xi, weights):
-        excitation = 0.0 # aca voy calculando la excitacion
+    def tanh(self, x):
+        return np.tanh(self.beta * x)
+
+    def tanh_derivative(self, x):
+        return self.beta * (1.0 - self.tanh(x) ** 2)
+
+    def sigmoid(self, x):
+	    return 1 / (1 + np.exp(-2 * self.beta * x))
+
+    def sigmoid_derivative(self, x):
+	    return 2 * self.beta * self.sigmoid(x) * (1 - self.sigmoid(x))
+
+    def get_sum(self, xi, weights):
+        sumatoria = 0.0
         for i,w in zip(xi, weights):
-            excitation += i * w 
-        return self.step(excitation)  
+            sumatoria += i * w
+        return sumatoria
+
+    def get_activation(self, sumatoria):
+        if self.linear: return self.step(sumatoria)
+        else: return self.sigmoid(sumatoria)
+
+    def update_weights(self, error, row, curr_weights):
+        delta_ws = [error * elem for elem in row]
+        if not self.linear:
+            h = 0.0
+            for i,w in zip(row, curr_weights):
+                h += i * w 
+            derivative = self.tanh_derivative(h)
+            delta_ws = [derivative * delta_w_i for delta_w_i in delta_ws]
+        return [delta + weight for delta, weight in zip(delta_ws, curr_weights)]
 
     def algorithm(self, operand):
         data = []
+        r = None
         #                             bias   x     y    out 
-        if operand == "AND": data = [[1.0,  1.0,  1.0,  1.0],
+        if operand == 'AND': data = [[1.0,  1.0,  1.0,  1.0],
                                      [1.0, -1.0,  1.0, -1.0],
                                      [1.0,  1.0, -1.0, -1.0],
                                      [1.0, -1.0, -1.0, -1.0]]
-        else: data = [[1.0,  1.0,  1.0, -1.0],
-                      [1.0, -1.0,  1.0,  1.0],
-                      [1.0,  1.0, -1.0,  1.0],
-                      [1.0, -1.0, -1.0, -1.0]]
+        elif operand == 'XOR': data = [ [1.0,  1.0,  1.0, -1.0],
+                                        [1.0, -1.0,  1.0,  1.0],
+                                        [1.0,  1.0, -1.0,  1.0],
+                                        [1.0, -1.0, -1.0, -1.0]]
+        elif operand == 'TEST': 
+            r = Reader('TEST')
+            data = r.readFile() # agarramos los datos de los txt
+        else:
+            r = Reader('Ej2')
+            data = r.readFile() # agarramos los datos de los txt
 
         weights = np.random.rand(len(data[0]) - 1, 1)
         error_min = 20
         total_error = 1
+        w_min = weights
+        error_per_epoch = []
+        plotter = Plotter()
         for epoch in range(self.iterations): # COTA del ppt
             if total_error > 0:
                 total_error = 0
-                if (epoch % 100 == 0):
-                    weights = np.random.rand(len(data[0]) - 1, 1)
-                for i in range(len(data)): # tamano del conjunto de entrenamiento
-                    activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+                #if (epoch % 100 == 0):
+                #    weights = np.random.rand(len(data[0]) - 1, 1)
+                for i in range(len(data)): # tamaño del conjunto de entrenamiento
+                    sumatoria = self.get_sum(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+                    activation = self.get_activation(sumatoria) 
                     error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
                     fixed_diff = self.alpha * error
-                    delta_ws = np.dot(fixed_diff, data[i]) # [fd * d[0], fd * d[1], ...]
-                    weights = [delta + weight for delta, weight in zip(delta_ws, weights)]
+                    derivative = 1.0
+                    if not self.linear:
+                        derivative = self.sigmoid_derivative(sumatoria)
+                    const = fixed_diff * derivative
+                    for j in range(len(weights)):
+                        weights[j] = weights[j] + (const * data[i][j])
                     total_error += abs(error)
+                error_per_epoch.append(total_error/len(data))
                 if total_error < error_min:
                     error_min = total_error
                     w_min = weights
             else:
                 break
-        self.create_plot(data, w_min, operand)
+        if operand != 'Ej2':
+            if len(w_min) != 0 or w_min != None : plotter.create_plot_ej1(data, w_min, operand)
+            else: plotter.create_plot_ej1(data, weights, operand)
+        else:
+            r = Reader('Ej2') # por las dudas
+            test_data = r.readFile(test=True)
+            self.test_perceptron(test_data, w_min)
+            print('Non linear data post analysis:')
+            print('epochs: {}'.format(epoch + 1))
+            plotter.create_plot_ej2(error_per_epoch)
         return
+
+    def test_perceptron(self, test_data, weights):
+        print('Testing perceptron...')
+        element_count = 0
+        print('+-------------------+-------------------+')
+        print('|   Desired output  |   Perceptron out  |')
+        print('+-------------------+-------------------+')
+        for row in test_data:
+            sumatoria = self.get_sum(row[:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+            perceptron_output = self.get_activation(sumatoria) 
+            element_count += 1
+            print('|{}|{}|'.format(row[-1], perceptron_output[0]))
+        print('Analysis finished')
 

@@ -79,15 +79,10 @@ class MultiLayerPerceptron:
                                      [1.0, -1.0,  1.0,  1.0],
                                      [1.0,  1.0, -1.0,  1.0],
                                      [1.0, -1.0, -1.0, -1.0]]
-        if problem == "AND": data = [[1.0,  1.0,  1.0,  1.0],
-                                     [1.0, -1.0,  1.0, -1.0],
-                                     [1.0,  1.0, -1.0, -1.0],
-                                     [1.0, -1.0, -1.0, -1.0]]
         if problem == "EVEN":
             r = Reader('Ej3')
             data = r.readFile()
                                 
-
         M = self.total_layers - 1                                   # M sera el indice de la capa superior
         nodes_per_layer = max(4, len(data[0]) - 1)                  # Cuantos nodos hay en las capas ocultas (incluye el del bias)
         exit_nodes = 1                                              # Cuantos nodos hay en la capa superior
