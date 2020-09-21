@@ -3,6 +3,7 @@ import numpy as np
 import random
 from file_reader import Reader
 from datetime import datetime
+from plotter import Plotter
 
 class MultiLayerPerceptron:
 
@@ -93,6 +94,8 @@ class MultiLayerPerceptron:
         acceptable_error = 0.01
         error_min = 20
         total_error = 1
+        error_per_epoch = []
+        plotter = Plotter()
         for epoch in range(1, self.iterations):
             total_error = 0
             # Randomize W every once in a while
@@ -119,7 +122,7 @@ class MultiLayerPerceptron:
                 for i in range(0, self.exit_nodes):
                     hMi = self.h(self.M, i, self.nodes_per_layer, self.W, self.V)
                     self.V[self.M][i] = self.g(hMi)
-                print("Expected %f\t got %f\tThis is epoch %d" %(data[mu][-1], self.V[self.M][i], epoch))
+                #print("Expected %f\t got %f\tThis is epoch %d" %(data[mu][-1], self.V[self.M][i], epoch))
 
                 # Paso 4 (Calculo error para capa de salida M)
                 for i in range(0, self.exit_nodes):
@@ -151,6 +154,7 @@ class MultiLayerPerceptron:
                         total_error += abs(data[mu][-1] - self.V[self.M][i])
                     else:
                         total_error += abs(data[mu][-1][i] - self.V[self.M][i])
+            error_per_epoch.append(total_error/len(data))
             if total_error < error_min:
                 error_min = total_error
                 self.w_min = self.W
@@ -160,10 +164,15 @@ class MultiLayerPerceptron:
         
         if problem == "EVEN":
             test_data = r.readFile(test=True)
-            self.test_perceptron(test_data, self.W)
-            print('Non linear data post analysis:')
-            print('epochs: {}'.format(epoch + 1))
-            #plotter.create_plot_ej2(error_per_epoch)
+        else:
+            test_data = [[1.0,  1.0,  1.0, -1.0],
+                    [1.0, -1.0,  1.0,  1.0],
+                    [1.0,  1.0, -1.0,  1.0],
+                    [1.0, -1.0, -1.0, -1.0]]
+        self.test_perceptron(test_data, self.w_min)
+        print('Non linear data post analysis:')
+        print('epochs: {}'.format(epoch + 1))
+        plotter.create_plot_ej2(error_per_epoch)
         return
 
     def test_perceptron(self, test_data, weights):
@@ -188,5 +197,5 @@ class MultiLayerPerceptron:
                 self.V[self.M][i] = self.g(hMi)
             perceptron_output = self.V[self.M][0]
             element_count += 1
-            print('|{}|{}|{}'.format(row[-1], perceptron_output, row))
+            print('       {}\t    |  {}'.format(row[-1], perceptron_output))
         print('Analysis finished')
