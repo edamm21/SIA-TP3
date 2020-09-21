@@ -21,14 +21,23 @@ class SimplePerceptron:
         return np.tanh(self.beta * x)
 
     def tanh_derivative(self, x):
-        return [self.beta * (1.0 - self.tanh(elem) ** 2) for elem in x]
+        return self.beta * (1.0 - self.tanh(x) ** 2)
 
-    def get_activation(self, xi, weights):
-        excitation = 0.0 # aca voy calculando la excitacion
+    def sigmoid(self, x):
+	    return 1 / (1 + np.exp(-2 * self.beta * x))
+
+    def sigmoid_derivative(self, x):
+	    return 2 * self.beta * self.sigmoid(x) * (1 - self.sigmoid(x))
+
+    def get_sum(self, xi, weights):
+        sumatoria = 0.0
         for i,w in zip(xi, weights):
-            excitation += i * w 
-        if self.linear: return self.step(excitation)
-        else: return self.tanh(excitation)
+            sumatoria += i * w
+        return sumatoria
+
+    def get_activation(self, sumatoria):
+        if self.linear: return self.step(sumatoria)
+        else: return self.sigmoid(sumatoria)
 
     def update_weights(self, error, row, curr_weights):
         delta_ws = [error * elem for elem in row]
@@ -42,6 +51,7 @@ class SimplePerceptron:
 
     def algorithm(self, operand):
         data = []
+        r = None
         #                             bias   x     y    out 
         if operand == 'AND': data = [[1.0,  1.0,  1.0,  1.0],
                                      [1.0, -1.0,  1.0, -1.0],
@@ -62,30 +72,53 @@ class SimplePerceptron:
         error_min = 20
         total_error = 1
         w_min = None
+        error_per_epoch = []
         for epoch in range(self.iterations): # COTA del ppt
             if total_error > 0:
                 total_error = 0
-                if (epoch % 100 == 0):
-                    weights = np.random.rand(len(data[0]) - 1, 1)
+                #if (epoch % 100 == 0):
+                #    weights = np.random.rand(len(data[0]) - 1, 1)
                 for i in range(len(data)): # tamaño del conjunto de entrenamiento
-                    activation = self.get_activation(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+                    sumatoria = self.get_sum(data[i][:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+                    activation = self.get_activation(sumatoria) 
                     error = data[i][-1] - activation # y(1,i_x) - activacion del ppt
-                    print(data[i][-1], activation)
                     fixed_diff = self.alpha * error
-                    weights = self.update_weights(fixed_diff, data[i][:-1], weights)
+                    derivative = 1.0
+                    if not self.linear:
+                        derivative = self.sigmoid_derivative(sumatoria)
+                    const = fixed_diff * derivative
+                    for j in range(len(weights)):
+                        weights[j] = weights[j] + (const * data[i][j])
                     total_error += abs(error)
+                error_per_epoch.append(total_error/len(data))
                 if total_error < error_min:
                     error_min = total_error
                     w_min = weights
             else:
                 break
-        if operand != 'Ej2' and operand != 'TEST':
-            plotter = Plotter()
-            if w_min != None : plotter.create_plot_ej1(data, w_min, operand)
+        plotter = Plotter()
+        if operand != 'Ej2':
+            if len(w_min) != 0 or w_min != None : plotter.create_plot_ej1(data, w_min, operand)
             else: plotter.create_plot_ej1(data, weights, operand)
         else:
+            r = Reader('Ej2') # por las dudas
+            test_data = r.readFile(test=True)
+            self.test_perceptron(test_data, w_min)
             print('Non linear data post analysis:')
-            print('epochs: {}'.format(epoch))
-            print('error: {}'.format(total_error))
+            print('epochs: {}'.format(epoch + 1))
+            plotter.create_plot_ej2(error_per_epoch)
         return
+
+    def test_perceptron(self, test_data, weights):
+        print('Testing perceptron...')
+        element_count = 0
+        print('+-------------------+-------------------+')
+        print('|   Desired output  |   Perceptron out  |')
+        print('+-------------------+-------------------+')
+        for row in test_data:
+            sumatoria = self.get_sum(row[:-1], weights) # dame toda la fila menos el ultimo elemento => x_i => x0, x1, x2, ...
+            perceptron_output = self.get_activation(sumatoria) 
+            element_count += 1
+            print('|{}|{}|'.format(row[-1], perceptron_output[0]))
+        print('Analysis finished')
 

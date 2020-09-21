@@ -6,34 +6,15 @@ class Reader:
     def __init__(self, excercise):
         self.excercise = excercise
     
-    def readFile(self):
+    def readFile(self, test=False):
+        if test == True:
+            return self.readExcerciseTwo(10)
         if self.excercise == 'Ej2':
             return self.readExcerciseTwo()
         if self.excercise == 'Ej3':
             return self.readExerciseThree(5, 7)
-        if self.excercise == 'TEST':
-            return self.readTest()
- 
-    def readTest(self):
-        f = open('test.txt', 'r')
-        g = open('test-out.txt', 'r')
-        linesf = f.read().split('\n')
-        linesg = g.read().split('\n')
-        valuesf = [line.strip() for line in linesf]
-        valuesg = self.normalize_output([float(line.strip()) for line in linesg])
-        values_indiv = [line.split(' ') for line in valuesf]
-        idx = 0
-        nice = []
-        for row in values_indiv:
-            nice.append([1.0])
-            for element in row:
-                if element != '':
-                    nice[idx].append(float(element))
-            nice[idx].append(float(valuesg[idx]))
-            idx += 1
-        return nice
- 
-    def readExcerciseTwo(self):
+
+    def readExcerciseTwo(self, amount=50):
         f = open('TP3-ej2-Conjunto-entrenamiento.txt', 'r')
         g = open('TP3-ej2-Salida-deseada.txt', 'r')
         linesf = f.read().split('\n')
@@ -42,6 +23,17 @@ class Reader:
         valuesg = self.normalize_output([float(line.strip()) for line in linesg])
         values_indiv = [line.split(' ') for line in valuesf]
         idx = 0
+        nice = []
+        full_data_row_count = len(valuesg)
+        for count in range(amount):
+            random_row = random.randint(0, full_data_row_count - 1)
+            nice.append([1.0])
+            row = values_indiv[random_row]
+            for element in row:
+                if element != '':
+                    nice[count].append(float(element))
+            nice[count].append(float(valuesg[random_row]))
+        return nice
 
     def readExerciseThree(self, width, height):
         f = open('TP3-ej3-mapa-de-pixeles-digitos-decimales.txt', 'r')
@@ -57,7 +49,7 @@ class Reader:
             data[i][0] = 1
             data[i][-1] = (i%2 * 2) - 1
         return data
-
+        
     def normalize_output(self, outputs): # tengo que normalizar sino está fuera del rango de activacion de la tanh o sigmoidea
         max_output = np.max(outputs)
         min_output = np.min(outputs)

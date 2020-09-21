@@ -38,3 +38,14 @@ class Plotter:
         plt.grid(True)
         plt.show()
         return
+    
+    def create_plot_ej2(self, errors):
+        fig,ax = plt.subplots()
+        ax.set_title('Evolución de error por época')
+        ax.set_xlabel("Época")
+        ax.set_ylabel("Error")
+        epochs = []
+        for i in range(len(errors)):
+            epochs.append(i)
+        plt.plot(epochs, errors)
+        plt.show()

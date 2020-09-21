@@ -11,6 +11,7 @@ with open(os.getcwd() + "/input.json") as file:
     alpha = data['LEARNING_RATE']
     epochs = data['EPOCHS']
     perceptron = data['PERCEPTRON']
+    beta = data['BETA']
 
 if(perceptron == 'SIMPLE'):
     p = SimplePerceptron(alpha=alpha, iterations=epochs, linear=False, beta=0.1)
