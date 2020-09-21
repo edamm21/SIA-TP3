@@ -12,6 +12,8 @@ with open(os.getcwd() + "/input.json") as file:
     epochs = data['EPOCHS']
     perceptron = data['PERCEPTRON']
     beta = data['BETA']
+    error_tolerance = data['ERROR_TOLERANCE']
+
 
 if(perceptron == 'SIMPLE'):
     if(operand == 'Ej2'):
@@ -20,6 +22,6 @@ if(perceptron == 'SIMPLE'):
         p = SimplePerceptron(alpha=alpha, iterations=epochs, linear=True, beta=beta)
     p.algorithm(operand)
 else:
-    p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1)
+    p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance)
     p.algorithm(operand)
 

@@ -7,7 +7,7 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, iterations=100, hidden_layers=1):
+    def __init__(self, alpha=0.01, iterations=100, hidden_layers=1, error_tolerance=0.01):
         self.alpha = alpha
         self.iterations = iterations
         self.hidden_layers = hidden_layers
@@ -16,6 +16,7 @@ class MultiLayerPerceptron:
         self.layer_activations = [None] * self.total_layers
         self.layer_weights = [[None] * self.total_layers]
         self.deltas_per_layer = [None] * self.total_layers
+        self.error_tolerance = error_tolerance
 
     def create_plot(self, data, weights, operand):
         fig,ax = plt.subplots()
@@ -91,8 +92,7 @@ class MultiLayerPerceptron:
             for dest in range(self.nodes_per_layer):
                 self.W[1,dest,orig] = w[dest,orig]
         
-        acceptable_error = 0.01
-        error_min = 20
+        error_min = 200
         total_error = 1
         error_per_epoch = []
         plotter = Plotter()
@@ -158,8 +158,7 @@ class MultiLayerPerceptron:
             if total_error < error_min:
                 error_min = total_error
                 self.w_min = self.W
-            if total_error <= acceptable_error*len(data):
-                print("End of epoch %d, total error for this epoch was %f, below max error allowed %f" %(epoch, total_error, acceptable_error*len(data)))
+            if total_error <= self.error_tolerance*len(data):
                 break
         
         if problem == "EVEN":
@@ -184,14 +183,10 @@ class MultiLayerPerceptron:
         for row in test_data:
             for k in range(len(row)-1):
                 self.V[0][k] = row[k]
-            
-            # Paso 3A (Vi tiene los resultados de cada perceptron en la capa m)
             for m in range(1, self.M):
                 for i in range(1, self.nodes_per_layer):
                     hmi = self.h(m, i, self.nodes_per_layer, self.W, self.V)
                     self.V[m][i] = self.g(hmi)
-
-            # Paso 3B (En la ultima capa habra exit_nodes en vez de nodes_per_layer)
             for i in range(0, self.exit_nodes):
                 hMi = self.h(self.M, i, self.nodes_per_layer, self.W, self.V)
                 self.V[self.M][i] = self.g(hMi)
