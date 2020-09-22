@@ -1,4 +1,5 @@
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
+import matplotlib
 import numpy as np
 
 class Plotter:
@@ -49,16 +50,33 @@ class Plotter:
         plt.plot(epochs, errors)
         plt.show()
 
-    def create_plot_ej3(self, errors, worst_errors):
+    def create_plot_ej3(self, errors, worst_errors, test_errors, test_worst_errors):
         fig,ax = plt.subplots()
         ax.set_title('Evolucion de error por epoca')
         ax.set_xlabel("Epoca")
         ax.set_ylabel("Error")
         epochs = []
-        epochs_worst = []
         for i in range(len(errors)):
             epochs.append(i)
-            epochs_worst.append(i)
-        plt.plot(epochs, errors)
-        plt.plot(epochs_worst, worst_errors)
+        plt.plot(epochs, errors, 'cornflowerblue', label='Avg Training error')
+        plt.plot(epochs, worst_errors, '-b', label='Max Training Error')
+        plt.plot(epochs, test_errors, 'darkorange', label='Avg Test Error')
+        plt.plot(epochs, test_worst_errors, '-r', label='Max Test Error')
+        #'-g', label='Hiperplano')
+        plt.legend(fontsize = 8)
+        plt.grid(True)
+        plt.show()
+
+    def create_plot_ej3_accuracy(self, accuracy, test_accuracy):
+        fig,ax = plt.subplots()
+        ax.set_title('Evolucion de accuracy por epoca')
+        ax.set_xlabel("Epoca")
+        ax.set_ylabel("Accuracy")
+        epochs = []
+        for i in range(len(accuracy)):
+            epochs.append(i)
+        plt.plot(epochs, accuracy, label='Training Accuracy')
+        plt.plot(epochs, test_accuracy, label='Test Accuracy')
+        plt.legend(fontsize = 8, loc = 0)
+        plt.grid(True)
         plt.show()

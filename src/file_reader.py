@@ -20,7 +20,7 @@ class Reader:
                 X.remove(elem)
             return X
         if self.excercise == 'Ej3' and test != True:
-            return self.readExerciseThree(5, 7, 8, test)
+            return self.readExerciseThree(5, 7, 7, test)
 
     def readExcerciseTwo(self, amount=50):
         f = open('TP3-ej2-Conjunto-entrenamiento.txt', 'r')
