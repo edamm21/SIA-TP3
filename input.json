@@ -1,8 +1,9 @@
 {
     "PERCEPTRON":"MULTI",
-    "FUNCTION":"EVEN",
+    "FUNCTION":"XOR",
     "LEARNING_RATE":0.01,
+    "ADAPTIVE_LEARNING_RATE":"TRUE",
     "BETA": 0.5,
-    "EPOCHS":2500,
+    "EPOCHS":100,
     "ERROR_TOLERANCE":0
 }
