@@ -48,3 +48,17 @@ class Plotter:
             epochs.append(i)
         plt.plot(epochs, errors)
         plt.show()
+
+    def create_plot_ej3(self, errors, worst_errors):
+        fig,ax = plt.subplots()
+        ax.set_title('Evolucion de error por epoca')
+        ax.set_xlabel("Epoca")
+        ax.set_ylabel("Error")
+        epochs = []
+        epochs_worst = []
+        for i in range(len(errors)):
+            epochs.append(i)
+            epochs_worst.append(i)
+        plt.plot(epochs, errors)
+        plt.plot(epochs_worst, worst_errors)
+        plt.show()

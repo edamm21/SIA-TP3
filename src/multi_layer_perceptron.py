@@ -95,9 +95,11 @@ class MultiLayerPerceptron:
         error_min = 200
         total_error = 1
         error_per_epoch = []
+        worst_error_per_epoch = []
         plotter = Plotter()
         for epoch in range(1, self.iterations):
             total_error = 0
+            worst_error_this_epoch = 0
             # Randomize W every once in a while
             if (epoch % 100000 == 99999):
                 self.W = np.random.rand(self.M+1, self.nodes_per_layer, self.nodes_per_layer)-0.5   # [capa destino, dest, origen]
@@ -150,11 +152,15 @@ class MultiLayerPerceptron:
 
                 # Paso 7 (Calcular error)
                 for i in range(0, self.exit_nodes):
+                    if abs(data[mu][-1] - self.V[self.M][i]) > worst_error_this_epoch:
+                        worst_error_this_epoch = abs(data[mu][-1] - self.V[self.M][i])
+                        #print('New worst {}'.format(worst_error_this_epoch))
                     if self.exit_nodes == 1:
                         total_error += abs(data[mu][-1] - self.V[self.M][i])
                     else:
                         total_error += abs(data[mu][-1][i] - self.V[self.M][i])
             error_per_epoch.append(total_error/len(data))
+            worst_error_per_epoch.append(worst_error_this_epoch)
             if total_error < error_min:
                 error_min = total_error
                 self.w_min = self.W
@@ -171,7 +177,7 @@ class MultiLayerPerceptron:
         self.test_perceptron(test_data, self.w_min)
         print('Non linear data post analysis:')
         print('epochs: {}'.format(epoch + 1))
-        plotter.create_plot_ej2(error_per_epoch)
+        plotter.create_plot_ej3(error_per_epoch, worst_error_per_epoch)
         return
 
     def test_perceptron(self, test_data, weights):
