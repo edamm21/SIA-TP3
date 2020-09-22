@@ -7,9 +7,11 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, iterations=100, hidden_layers=1, error_tolerance=0.01):
+    def __init__(self, alpha=0.01, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False):
         self.alpha = alpha
+        self.initial_alpha = alpha
         self.iterations = iterations
+        self.adaptive = adaptive
         self.hidden_layers = hidden_layers
         self.total_layers = hidden_layers + 2 # input + hidden + output
         self.layer_real_results = [None] * self.total_layers
@@ -18,42 +20,22 @@ class MultiLayerPerceptron:
         self.deltas_per_layer = [None] * self.total_layers
         self.error_tolerance = error_tolerance
 
-    def create_plot(self, data, weights, operand):
-        fig,ax = plt.subplots()
-        ax.set_title(operand)
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-
-        map_min = -1.5
-        map_max = 2
-        res = 0.5
-        x = np.linspace(-1.5, 2, 10) # te devuelve un intervalo entre -1.5 y 2 con numeros espaciados iguales para graficar el hiperplano
-        for w in range(1,3):
-            plt.plot(x, -((weights[w][0] + weights[w][1] * x) / weights[w][2]), '-g', label='Hiperplano')
-
-        positives = [[],[]]
-        negatives = [[],[]]
-        for i in range(len(data)):
-            x = data[i][1]
-            y = data[i][2]
-            desired  = data[i][-1]
-            if desired == 1:
-                positives[0].append(x)
-                positives[1].append(y)
+    def adjust_learning_rate(self, errors_so_far):
+        if(len(errors_so_far) > 10):
+            last_10_errors = errors_so_far[-10:]
+            booleans = []
+            for i in range(len(last_10_errors) - 1):
+                booleans.append(last_10_errors[i] > last_10_errors[i + 1])
+            if all(booleans):
+                self.alpha += 0.001
             else:
-                negatives[0].append(x)
-                negatives[1].append(y)
+                self.alpha -= 0.01 * self.alpha
 
-        plt.xlim(map_min,map_max - 0.5)
-        plt.ylim(map_min,map_max - 0.5)
-
-        plt.scatter(negatives[0], negatives[1], s = 40.0, c = 'r', label = 'Proyeccion w < 0')
-        plt.scatter(positives[0], positives[1], s = 40.0, c = 'b', label = 'Proyeccion w > 0')
-
-        plt.legend(fontsize = 8, loc = 0)
-        plt.grid(True)
-        plt.show()
-        return
+    def error_function(self, sqr_errors_sum):
+        if isinstance(sqr_errors_sum, list):
+            return (0.5 * (sqr_errors_sum))[0] 
+        else:
+            return 0.5 * (sqr_errors_sum)
 
     def g(self, x):
         return np.tanh(2 * x)
@@ -92,7 +74,7 @@ class MultiLayerPerceptron:
             for dest in range(self.nodes_per_layer):
                 self.W[1,dest,orig] = w[dest,orig]
         
-        error_min = 200
+        error_min = len(data)*2
         positivity_margin = 0.75
         total_error = 1
         error_per_epoch = []
@@ -174,7 +156,6 @@ class MultiLayerPerceptron:
                 # Paso 7 (Calcular error)
                 for i in range(0, self.exit_nodes):
                     if abs(data[mu][-1] - self.V[self.M][i]) > worst_error_this_epoch:
-                        print("Epoch %d new max error %f because %f vs %f" %(epoch, abs(data[mu][-1] - self.V[self.M][i]), data[mu][-1], self.V[self.M][i]))
                         worst_error_this_epoch = abs(data[mu][-1] - self.V[self.M][i])
                     if self.exit_nodes == 1:
                         total_error += abs(data[mu][-1] - self.V[self.M][i])
@@ -183,6 +164,8 @@ class MultiLayerPerceptron:
             error_per_epoch.append(total_error/len(data))
             worst_error_per_epoch.append(worst_error_this_epoch)
             accuracy.append(positives / (0.0 + positives + negatives))
+            if self.adaptive and epoch % 10 == 0:
+                self.adjust_learning_rate(error_per_epoch)
             if total_error < error_min:
                 error_min = total_error
                 self.w_min = self.W
@@ -191,8 +174,6 @@ class MultiLayerPerceptron:
                 break
             else:
                 self.test_perceptron(test_data, self.w_min, epoch, test_error_per_epoch, test_worst_error_per_epoch, test_accuracy, positivity_margin, False)
-        
-        # TESTING GROUNDS
         plotter.create_plot_ej3(error_per_epoch, worst_error_per_epoch, test_error_per_epoch, test_worst_error_per_epoch)
         plotter.create_plot_ej3_accuracy(accuracy, test_accuracy)
         return
