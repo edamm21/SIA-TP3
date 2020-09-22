@@ -22,26 +22,32 @@ class Reader:
         if self.excercise == 'Ej3' and test != True:
             return self.readExerciseThree(5, 7, 7, test)
 
-    def readExcerciseTwo(self, amount=50):
+    def readExcerciseTwo(self, amount=150):
         f = open('TP3-ej2-Conjunto-entrenamiento.txt', 'r')
         g = open('TP3-ej2-Salida-deseada.txt', 'r')
         linesf = f.read().split('\n')
         linesg = g.read().split('\n')
         valuesf = [line.strip() for line in linesf]
-        valuesg = self.normalize_output([float(line.strip()) for line in linesg])
+        valuesg_normalized, max_out, min_out = self.normalize_output([float(line.strip()) for line in linesg])
+        valuesg = [float(line.strip()) for line in linesg]
+        #values_indiv = self.normalize_inputs([line.split(' ') for line in valuesf])
         values_indiv = [line.split(' ') for line in valuesf]
         idx = 0
         nice = []
+        nice_normalized = []
         full_data_row_count = len(valuesg)
         for count in range(amount):
             random_row = random.randint(0, full_data_row_count - 1)
             nice.append([1.0])
+            nice_normalized.append([1.0])
             row = values_indiv[random_row]
             for element in row:
                 if element != '':
                     nice[count].append(float(element))
+                    nice_normalized[count].append(float(element))
             nice[count].append(float(valuesg[random_row]))
-        return nice
+            nice_normalized[count].append(float(valuesg_normalized[random_row]))
+        return nice, nice_normalized, max_out, min_out
 
     def readExerciseThree(self, width=5, height=7, amount=10, test=False):
         f = open('TP3-ej3-mapa-de-pixeles-digitos-decimales.txt', 'r')
@@ -68,4 +74,4 @@ class Reader:
         min_output = np.min(outputs)
         for i in range(0, len(outputs)):
             outputs[i] =  (outputs[i] - min_output) / (max_output - min_output)
-        return outputs
+        return outputs, max_output, min_output
