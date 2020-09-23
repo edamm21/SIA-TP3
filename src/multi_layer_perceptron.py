@@ -7,8 +7,9 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False, classification_margin=0.99):
+    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False, classification_margin=0.99, nodes_per_layer=10):
         self.alpha = alpha
+        self.initial_alpha = alpha
         self.beta = beta
         self.classification_margin = classification_margin
         self.iterations = iterations
@@ -20,6 +21,7 @@ class MultiLayerPerceptron:
         self.layer_weights = [[None] * self.total_layers]
         self.deltas_per_layer = [None] * self.total_layers
         self.error_tolerance = error_tolerance
+        self.nodes_per_layer = nodes_per_layer
 
     def adjust_learning_rate(self, errors_so_far):
         if(len(errors_so_far) > 10):
@@ -36,7 +38,7 @@ class MultiLayerPerceptron:
         return np.tanh(self.beta * x)
  
     def g_derivative(self, x):
-        cosh2 = np.cosh(self.beta*x) ** 2
+        cosh2 = (np.cosh(self.beta*x)) ** 2
         return self.beta / cosh2
 
     def h(self, m, i, amount_of_nodes, W, V):
@@ -56,7 +58,7 @@ class MultiLayerPerceptron:
             data = r.readFile()
                                 
         self.M = self.total_layers - 1                                  # M sera el indice de la capa superior
-        self.nodes_per_layer = max(4, len(data[0]) - 1)                 # Cuantos nodos hay en las capas ocultas (incluye el del bias)
+        self.nodes_per_layer = max(self.nodes_per_layer, len(data[0]) - 1)                 # Cuantos nodos hay en las capas ocultas (incluye el del bias)
         self.exit_nodes = 1                                             # Cuantos nodos hay en la capa superior
         self.V = np.zeros((self.M + 1, self.nodes_per_layer))           # [capa, j]
         for i in range(1, self.M):
@@ -213,3 +215,7 @@ class MultiLayerPerceptron:
         test_accuracy.append(positives / (0.0 + positives + negatives))
         if printing:
             print('Analysis finished for epoch %d' %(epoch+1))
+            print('Initial learning rate: {}'.format(self.initial_alpha))
+            print('End learning rate: {}'.format(self.alpha))
+            print('+-------------------+-------------------+')
+            print('Test finished')

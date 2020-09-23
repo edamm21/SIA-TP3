@@ -16,15 +16,17 @@ with open(os.getcwd() + "/input.json") as file:
     error_tolerance = data['ERROR_TOLERANCE']
     adaptive = data['ADAPTIVE_LEARNING_RATE']
     classification_margin = data['CLASSIFICATION_MARGIN']
-
-if(perceptron == 'SIMPLE'):
+    hidden_layers = data['HIDDEN_LAYERS']
+    nodes_per_layer = data['NODES_PER_LAYER']
     adaptive = adaptive == 'TRUE'
+if(perceptron == 'SIMPLE'):
     if(operand == 'Ej2'):
         p = SimplePerceptronEj2(alpha=alpha, iterations=epochs, beta=beta, adaptive=adaptive)
     else:
         p = SimplePerceptron(alpha=alpha, iterations=epochs, adaptive=adaptive)
 else:
-    p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance, adaptive=True, classification_margin=classification_margin)
+	p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=hidden_layers, nodes_per_layer=nodes_per_layer,
+			error_tolerance=error_tolerance, adaptive=adaptive, classification_margin=classification_margin)
 
 p.algorithm(operand)
 
