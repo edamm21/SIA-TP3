@@ -15,6 +15,7 @@ with open(os.getcwd() + "/input.json") as file:
     beta = data['BETA']
     error_tolerance = data['ERROR_TOLERANCE']
     adaptive = data['ADAPTIVE_LEARNING_RATE']
+    classification_margin = data['CLASSIFICATION_MARGIN']
 
 if(perceptron == 'SIMPLE'):
     adaptive = adaptive == 'TRUE'
@@ -23,7 +24,7 @@ if(perceptron == 'SIMPLE'):
     else:
         p = SimplePerceptron(alpha=alpha, iterations=epochs, adaptive=adaptive)
 else:
-    p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance, adaptive=True)
+    p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance, adaptive=True, classification_margin=classification_margin)
 
 p.algorithm(operand)
 

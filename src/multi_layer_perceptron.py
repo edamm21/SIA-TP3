@@ -7,10 +7,10 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False):
+    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False, classification_margin=0.99):
         self.alpha = alpha
         self.beta = beta
-        self.initial_alpha = alpha
+        self.classification_margin = classification_margin
         self.iterations = iterations
         self.adaptive = adaptive
         self.hidden_layers = hidden_layers
@@ -70,7 +70,7 @@ class MultiLayerPerceptron:
                 self.W[1,dest,orig] = w[dest,orig]
         
         error_min = len(data)*2
-        positivity_margin = 0.95
+        positivity_margin = self.classification_margin
         total_error = 1
         error_per_epoch = []
         worst_error_per_epoch = []
