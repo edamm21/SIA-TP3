@@ -15,9 +15,10 @@ Para configurar el ejercicio 1, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"SIMPLE",
         "FUNCTION":"AND",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"FALSE",
+        "TRAINING_SET_SIZE_EX_2": 150,
+        "ADAPTIVE_LEARNING_RATE":"TRUE",
         "BETA": 0.5,
-        "EPOCHS": 1000,
+        "EPOCHS": 100,
         "ERROR_TOLERANCE": 0.01,
         "CLASSIFICATION_MARGIN": 0.25,
         "HIDDEN_LAYERS": 3,
@@ -33,9 +34,10 @@ Para configurar el ejercicio 2, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"SIMPLE",
         "FUNCTION":"Ej2",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"FALSE",
+        "TRAINING_SET_SIZE_EX_2": 150,
+        "ADAPTIVE_LEARNING_RATE":"TRUE",
         "BETA": 0.5,
-        "EPOCHS": 1000,
+        "EPOCHS": 100,
         "ERROR_TOLERANCE": 0.01,
         "CLASSIFICATION_MARGIN": 0.25,
         "HIDDEN_LAYERS": 3,
@@ -51,17 +53,16 @@ Para configurar el ejercicio 3, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"MULTI",
         "FUNCTION":"XOR",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"FALSE",
+        "TRAINING_SET_SIZE_EX_2": 150,
+        "ADAPTIVE_LEARNING_RATE":"TRUE",
         "BETA": 0.5,
-        "EPOCHS": 1000,
+        "EPOCHS": 100,
         "ERROR_TOLERANCE": 0.01,
         "CLASSIFICATION_MARGIN": 0.25,
         "HIDDEN_LAYERS": 3,
         "NODES_PER_LAYER": 10
     }
 ```
-
-Donde el campo ```"FUNCTION"```puede tomar los valores ```"EVEN"```o ```"XOR"```.
 
 Luego para ejecutar el programa, dentro de la carpeta ```src```, corremos el siguiente comando:
 
@@ -98,3 +99,4 @@ Opciones posibles para los campos del archivo de configuración
 |           CLASSIFICATION_MARGIN           |                                 VALOR_NUMÉRICO                                 ||
 | HIDDEN_LAYERS | VALOR NUMÉRICO | Especifica la cantidad de capas ocultas para el perceptrón multicapa|
 | NODES_PER_LAYER | VALOR NUMÉRICO | Especifica la cantidad de nodos por capa para el perceptrón multicapa|
+| TRAINING_SET_SIZE_EX_2 | VALOR NUMÉRICO | Especifica la cantidad de individuos a seleccionar para entrenar a la red del ejercicio 2, dejando el resto para testear a la misma |

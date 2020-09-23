@@ -8,11 +8,11 @@ class Reader:
         self.excercise = excercise
         self.readContent = []
     
-    def readFile(self, test=False):
+    def readFile(self, size=180, test=False):
         if self.excercise == 'Ej2' and test == True:
             return self.readExcerciseTwo(10)
         if self.excercise == 'Ej2' and test != True:
-            return self.readExcerciseTwo()
+            return self.readExcerciseTwo(size)
         if self.excercise == 'Ej3' and test == True:
             X = self.readExerciseThree(5, 7, 10, test).tolist()
             Y = self.readContent.tolist()

@@ -15,9 +15,11 @@ class SimplePerceptron:
     def adjust_learning_rate(self, errors_so_far):
         if(len(errors_so_far) > 10):
             last_10_errors = errors_so_far[-10:]
+            print(last_10_errors)
             booleans = []
             for i in range(len(last_10_errors) - 1):
                 booleans.append(last_10_errors[i] > last_10_errors[i + 1])
+            print(booleans)
             if all(booleans):
                 self.alpha += 0.001
             elif not all(booleans):

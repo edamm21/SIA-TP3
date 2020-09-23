@@ -6,7 +6,7 @@ from plotter import Plotter
 
 class SimplePerceptronEj2:
     
-    def __init__(self, alpha=0.01, iterations=100, beta=0.5, adaptive=False):
+    def __init__(self, alpha=0.01, iterations=100, beta=0.5, adaptive=False, size=180):
         self.alpha_linear = alpha
         self.alpha_non_linear = alpha
         self.initial_alpha_linear = alpha
@@ -14,6 +14,7 @@ class SimplePerceptronEj2:
         self.iterations = iterations
         self.beta = beta
         self.adaptive = adaptive
+        self.size = size
 
     def adjust_learning_rate(self, errors_so_far, linear):
         if(len(errors_so_far) > 10):
@@ -57,7 +58,7 @@ class SimplePerceptronEj2:
 
     def algorithm(self, operand):
         r = Reader('Ej2')
-        data_linear, data_non_linear, test_data_linear, test_data_non_linear, max_, min_ = r.readFile() # agarramos los datos de los txt
+        data_linear, data_non_linear, test_data_linear, test_data_non_linear, max_, min_ = r.readFile(size=self.size) # agarramos los datos de los txt
         #test_data_linear, test_data_non_linear, max_out, min_out = r.readFile(test=True)
         initial_weights = np.random.rand(len(data_linear[0]) - 1, 1)
         weights_linear     = initial_weights.copy()

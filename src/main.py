@@ -19,6 +19,7 @@ with open(os.getcwd() + "/input.json") as file:
     hidden_layers = data['HIDDEN_LAYERS']
     nodes_per_layer = data['NODES_PER_LAYER']
     adaptive = adaptive == 'TRUE'
+    training_set_size = data['TRAINING_SET_SIZE_EX_2']
 
 if perceptron != 'SIMPLE' and perceptron != 'MULTI':
     exit('Error with perceptron selection. Possible values: "SIMPLE" or "MULTI"')
@@ -42,10 +43,12 @@ if hidden_layers < 0.0:
     exit('Error with hidden layers. Value must be positive')
 if nodes_per_layer < 0.0:
     exit('Error with nodes per layer. Value must be positive')
+if training_set_size < 0.0 or training_set_size > 200:
+    exit('Error with training set size for excercise 2. Value must be within [0-200]')
 
 if(perceptron == 'SIMPLE'):
     if(operand == 'Ej2'):
-        p = SimplePerceptronEj2(alpha=alpha, iterations=epochs, beta=beta, adaptive=adaptive)
+        p = SimplePerceptronEj2(alpha=alpha, iterations=epochs, beta=beta, adaptive=adaptive, size=training_set_size)
     else:
         p = SimplePerceptron(alpha=alpha, iterations=epochs, adaptive=adaptive)
 else:
