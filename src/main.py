@@ -19,6 +19,30 @@ with open(os.getcwd() + "/input.json") as file:
     hidden_layers = data['HIDDEN_LAYERS']
     nodes_per_layer = data['NODES_PER_LAYER']
     adaptive = adaptive == 'TRUE'
+
+if perceptron != 'SIMPLE' and perceptron != 'MULTI':
+    exit('Error with perceptron selection. Possible values: "SIMPLE" or "MULTI"')
+elif perceptron == 'SIMPLE' and (operand != 'AND' and operand != 'XOR' and operand != 'Ej2'):
+    exit('Error with problem selection. Possible values for simple perceptron: "XOR" or "AND" or "Ej2"')
+elif perceptron == 'MULTI' and (operand != 'XOR' and operand != 'EVEN'):
+    exit('Error with problem selection. Possible values for multi layer perceptron: "XOR" or "EVEN"')
+if alpha < 0.0:
+    exit('Error with learning rate. Value must be positive')
+if adaptive != True and adaptive != False:
+    exit('Error with adaptive learning rate option. Possible values are: "TRUE" or "FALSE"')
+if epochs < 0.0:
+    exit('Error with epochs. Value must be positive')
+if beta < 0.0:
+    exit('Error with beta coefficient. Value must be positive')
+if error_tolerance < 0.0:
+    exit('Error with error tolerance. Value must be positive')
+if classification_margin < 0.0:
+    exit('Error with classification margin. Value must be positive')
+if hidden_layers < 0.0:
+    exit('Error with hidden layers. Value must be positive')
+if nodes_per_layer < 0.0:
+    exit('Error with nodes per layer. Value must be positive')
+
 if(perceptron == 'SIMPLE'):
     if(operand == 'Ej2'):
         p = SimplePerceptronEj2(alpha=alpha, iterations=epochs, beta=beta, adaptive=adaptive)
