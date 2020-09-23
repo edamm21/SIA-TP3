@@ -15,15 +15,15 @@ Para configurar el ejercicio 1, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"SIMPLE",
         "FUNCTION":"AND",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"TRUE",
+        "ADAPTIVE_LEARNING_RATE":"FALSE",
         "BETA": 0.5,
-        "EPOCHS":100,
-        "ERROR_TOLERANCE":0,
-        "CLASSIFICATION_MARGIN":0.15
+        "EPOCHS": 1000,
+        "ERROR_TOLERANCE": 0.01,
+        "CLASSIFICATION_MARGIN": 0.25,
+        "HIDDEN_LAYERS": 3,
+        "NODES_PER_LAYER": 10
     }
 ```
-
-Donde el campo ```"FUNCTION"```puede tomar los valores ```"AND"```o ```"XOR"```.
 
 ## Ejercicio 2
 Para configurar el ejercicio 2, debemos especificar en el archivo ```input.json``` que el tipo de perceptrón es simple, y debemos aclarar que el ejercicio que deseamos resolver es el 2. Ejemplo:
@@ -33,11 +33,13 @@ Para configurar el ejercicio 2, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"SIMPLE",
         "FUNCTION":"Ej2",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"TRUE",
+        "ADAPTIVE_LEARNING_RATE":"FALSE",
         "BETA": 0.5,
-        "EPOCHS":100,
-        "ERROR_TOLERANCE":0,
-        "CLASSIFICATION_MARGIN":0.15
+        "EPOCHS": 1000,
+        "ERROR_TOLERANCE": 0.01,
+        "CLASSIFICATION_MARGIN": 0.25,
+        "HIDDEN_LAYERS": 3,
+        "NODES_PER_LAYER": 10
     }
 ```
 
@@ -49,11 +51,13 @@ Para configurar el ejercicio 3, debemos especificar en el archivo ```input.json`
         "PERCEPTRON":"MULTI",
         "FUNCTION":"XOR",
         "LEARNING_RATE":0.01,
-        "ADAPTIVE_LEARNING_RATE":"TRUE",
+        "ADAPTIVE_LEARNING_RATE":"FALSE",
         "BETA": 0.5,
-        "EPOCHS":100,
-        "ERROR_TOLERANCE":0,
-        "CLASSIFICATION_MARGIN":0.15
+        "EPOCHS": 1000,
+        "ERROR_TOLERANCE": 0.01,
+        "CLASSIFICATION_MARGIN": 0.25,
+        "HIDDEN_LAYERS": 3,
+        "NODES_PER_LAYER": 10
     }
 ```
 
@@ -91,4 +95,6 @@ Opciones posibles para los campos del archivo de configuración
 | BETA | VALOR NUMÉRICO                                | Determina el término beta presente en la función logística o tanh de los perceptrones simples no lineales o multicapa |
 | EPOCHS     |                             VALOR NUMÉRICO                             | Determina la máxima cantidad de épocas con las que se entrenará al perceptrón                                      |
 |ERROR_TOLERANCE            |                                 VALOR NUMÉRICO                                | |
-|           CLASSIFICATION_MARGIN           |                                 VALOR_NUMÉRICO                                 |                                                                                                                   |
+|           CLASSIFICATION_MARGIN           |                                 VALOR_NUMÉRICO                                 ||
+| HIDDEN_LAYERS | VALOR NUMÉRICO | Especifica la cantidad de capas ocultas para el perceptrón multicapa|
+| NODES_PER_LAYER | VALOR NUMÉRICO | Especifica la cantidad de nodos por capa para el perceptrón multicapa|
