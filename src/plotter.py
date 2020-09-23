@@ -51,7 +51,7 @@ class Plotter:
             epochs.append(i)
         plt.plot(epochs, errors, label='Errores de entrenamiento')
         plt.plot(epochs, test_errors, label='Errores de testeo')
-        plt.plot(epochs, alphas, label='Variación del aprendizaje')
+        plt.plot(epochs, alphas, label='Variacion del aprendizaje')
         plt.legend(fontsize = 8, loc = 0)
         plt.grid(True)
         plt.show()

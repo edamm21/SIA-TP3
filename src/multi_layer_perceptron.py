@@ -7,7 +7,7 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False, classification_margin=0.99, nodes_per_layer=10):
+    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False, classification_margin=0.99, nodes_per_layer=10, training_set_size=7):
         self.alpha = alpha
         self.initial_alpha = alpha
         self.beta = beta
@@ -22,6 +22,7 @@ class MultiLayerPerceptron:
         self.deltas_per_layer = [None] * self.total_layers
         self.error_tolerance = error_tolerance
         self.nodes_per_layer = nodes_per_layer
+        self.training_set_size = training_set_size
 
     def adjust_learning_rate(self, errors_so_far):
         if(len(errors_so_far) > 10):
@@ -55,7 +56,7 @@ class MultiLayerPerceptron:
                                      [1.0, -1.0, -1.0, -1.0]]
         if problem == "EVEN":
             r = Reader('Ej3')
-            data = r.readFile()
+            data = r.readFile(size=self.training_set_size)
                                 
         self.M = self.total_layers - 1                                  # M sera el indice de la capa superior
         self.nodes_per_layer = max(self.nodes_per_layer, len(data[0]) - 1)                 # Cuantos nodos hay en las capas ocultas (incluye el del bias)
@@ -79,7 +80,7 @@ class MultiLayerPerceptron:
         accuracy = []
         plotter = Plotter()
         if problem == "EVEN":
-            test_data = r.readFile(test=True)
+            test_data = r.readFile(size=self.training_set_size, test=True)
         else:
             test_data = [[1.0,  1.0,  1.0, -1.0],
                          [1.0, -1.0,  1.0,  1.0],

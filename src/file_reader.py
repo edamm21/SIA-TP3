@@ -16,11 +16,12 @@ class Reader:
         if self.excercise == 'Ej3' and test == True:
             X = self.readExerciseThree(5, 7, 10, test).tolist()
             Y = self.readContent.tolist()
-            for elem in Y:
-                X.remove(elem)
+            if len(Y) < 10:
+                for elem in Y:
+                    X.remove(elem)
             return X
         if self.excercise == 'Ej3' and test != True:
-            return self.readExerciseThree(5, 7, 7, test)
+            return self.readExerciseThree(5, 7, min(size, 10), test)
 
     def readExcerciseTwo(self, amount=180):
         f = open('TP3-ej2-Conjunto-entrenamiento.txt', 'r')

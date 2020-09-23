@@ -19,7 +19,7 @@ with open(os.getcwd() + "/input.json") as file:
     hidden_layers = data['HIDDEN_LAYERS']
     nodes_per_layer = data['NODES_PER_LAYER']
     adaptive = adaptive == 'TRUE'
-    training_set_size = data['TRAINING_SET_SIZE_EX_2']
+    training_set_size = data['TRAINING_SET_SIZE']
 
 if perceptron != 'SIMPLE' and perceptron != 'MULTI':
     exit('Error with perceptron selection. Possible values: "SIMPLE" or "MULTI"')
@@ -53,7 +53,7 @@ if(perceptron == 'SIMPLE'):
         p = SimplePerceptron(alpha=alpha, iterations=epochs, adaptive=adaptive)
 else:
 	p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=hidden_layers, nodes_per_layer=nodes_per_layer,
-			error_tolerance=error_tolerance, adaptive=adaptive, classification_margin=classification_margin)
+			error_tolerance=error_tolerance, adaptive=adaptive, classification_margin=classification_margin, training_set_size=training_set_size)
 
 p.algorithm(operand)
 
