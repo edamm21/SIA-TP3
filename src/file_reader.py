@@ -22,32 +22,49 @@ class Reader:
         if self.excercise == 'Ej3' and test != True:
             return self.readExerciseThree(5, 7, 7, test)
 
-    def readExcerciseTwo(self, amount=150):
+    def readExcerciseTwo(self, amount=180):
         f = open('TP3-ej2-Conjunto-entrenamiento.txt', 'r')
         g = open('TP3-ej2-Salida-deseada.txt', 'r')
         linesf = f.read().split('\n')
         linesg = g.read().split('\n')
+        total_amount = len(linesf)
+        testing_amount = total_amount - amount
         valuesf = [line.strip() for line in linesf]
         valuesg_normalized, max_out, min_out = self.normalize_output([float(line.strip()) for line in linesg])
         valuesg = [float(line.strip()) for line in linesg]
-        #values_indiv = self.normalize_inputs([line.split(' ') for line in valuesf])
         values_indiv = [line.split(' ') for line in valuesf]
         idx = 0
         nice = []
         nice_normalized = []
         full_data_row_count = len(valuesg)
+        training_indexes = set()
+        while len(training_indexes) < amount:
+            training_indexes.add(random.randint(0, full_data_row_count - 1))
+        training_indexes_list = list(training_indexes)
         for count in range(amount):
-            random_row = random.randint(0, full_data_row_count - 1)
             nice.append([1.0])
             nice_normalized.append([1.0])
-            row = values_indiv[random_row]
+            row = values_indiv[training_indexes_list[count]]
             for element in row:
                 if element != '':
                     nice[count].append(float(element))
                     nice_normalized[count].append(float(element))
-            nice[count].append(float(valuesg[random_row]))
-            nice_normalized[count].append(float(valuesg_normalized[random_row]))
-        return nice, nice_normalized, max_out, min_out
+            nice[count].append(float(valuesg[training_indexes_list[count]]))
+            nice_normalized[count].append(float(valuesg_normalized[training_indexes_list[count]]))
+        testing_indexes_list = list(set(range(0, total_amount)) - training_indexes)
+        test = []
+        test_normalized = []
+        for count in range(testing_amount):
+            test.append([1.0])
+            test_normalized.append([1.0])
+            row = values_indiv[testing_indexes_list[count]]
+            for element in row:
+                if element != '':
+                    test[count].append(float(element))
+                    test_normalized[count].append(float(element))
+            test[count].append(float(valuesg[testing_indexes_list[count]]))
+            test_normalized[count].append(float(valuesg_normalized[testing_indexes_list[count]]))
+        return nice, nice_normalized, test, test_normalized, max_out, min_out
 
     def readExerciseThree(self, width=5, height=7, amount=10, test=False):
         f = open('TP3-ej3-mapa-de-pixeles-digitos-decimales.txt', 'r')

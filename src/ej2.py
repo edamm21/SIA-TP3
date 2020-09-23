@@ -57,8 +57,8 @@ class SimplePerceptronEj2:
 
     def algorithm(self, operand):
         r = Reader('Ej2')
-        data_linear, data_non_linear, max_, min_ = r.readFile() # agarramos los datos de los txt
-        test_data_linear, test_data_non_linear, max_out, min_out = r.readFile(test=True)
+        data_linear, data_non_linear, test_data_linear, test_data_non_linear, max_, min_ = r.readFile() # agarramos los datos de los txt
+        #test_data_linear, test_data_non_linear, max_out, min_out = r.readFile(test=True)
         initial_weights = np.random.rand(len(data_linear[0]) - 1, 1)
         weights_linear     = initial_weights.copy()
         weights_non_linear = initial_weights.copy()
@@ -70,6 +70,8 @@ class SimplePerceptronEj2:
         w_min_non_linear = initial_weights.copy()
         error_per_epoch_linear     = []
         error_per_epoch_non_linear = []
+        alpha_per_epoch_linear     = []
+        alpha_per_epoch_non_linear = []
         plotter = Plotter()
         test_error_per_epoch_linear     = []
         test_error_per_epoch_non_linear = []
@@ -94,14 +96,16 @@ class SimplePerceptronEj2:
                     for j in range(len(weights_non_linear)):
                         weights_non_linear[j] = weights_non_linear[j] + (const_non_linear * data_non_linear[i][j])
                     total_error_linear += error_linear**2
-                    total_error_non_linear += error_non_linear**2
-                error_this_epoch_linear = self.error_function(total_error_linear/len(data_linear))    
+                    total_error_non_linear += self.denormalize(error_non_linear, max_, min_)**2
+                error_this_epoch_linear = self.error_function(total_error_linear)/len(data_linear)    
                 error_per_epoch_linear.append(error_this_epoch_linear)
-                error_this_epoch_non_linear = self.error_function(total_error_non_linear/len(data_non_linear))    
+                error_this_epoch_non_linear = self.error_function(total_error_non_linear)/len(data_non_linear)    
                 error_per_epoch_non_linear.append(error_this_epoch_non_linear)
                 if self.adaptive and epoch % 10 == 0:
                     self.adjust_learning_rate(error_per_epoch_linear, linear=True)
                     self.adjust_learning_rate(error_per_epoch_non_linear, linear=False)
+                alpha_per_epoch_linear.append(self.alpha_linear)
+                alpha_per_epoch_non_linear.append(self.alpha_non_linear)
                 if epoch == 0:
                     error_min_linear = error_this_epoch_linear
                 if error_this_epoch_linear < error_min_linear:
@@ -111,25 +115,30 @@ class SimplePerceptronEj2:
                     error_min_non_linear = error_this_epoch_non_linear
                     w_min_non_linear = weights_non_linear
                 test_error_per_epoch_linear.append(self.test_perceptron(test_data_linear, w_min_linear, linear=True, max_out=None, min_out=None, print_=False))
-                test_error_per_epoch_non_linear.append(self.test_perceptron(test_data_non_linear, w_min_non_linear, linear=False, max_out=max_out, min_out=min_out, print_=False))
+                test_error_per_epoch_non_linear.append(self.test_perceptron(test_data_non_linear, w_min_non_linear, linear=False, max_out=max_, min_out=min_, print_=False))
             else:
                 break
-        self.test_perceptron(test_data_linear, w_min_linear, linear=True, max_out=None, min_out=None, print_=True)
-        self.test_perceptron(test_data_non_linear, w_min_non_linear, linear=False, max_out=max_out, min_out=min_out, print_=True)
-        print('Analysis:')
-        print('epochs: {}'.format(epoch + 1))
+        
+        print('*************** RESULTS ***************')
+        print('Analysis for training set:')
+        print('Epochs: {}'.format(epoch + 1))
         print('Initial alpha linear: {}'.format(self.initial_alpha_linear))
         print('Initial alpha non linear: {}'.format(self.initial_alpha_non_linear))
         print('End alpha linear: {}'.format(self.alpha_linear))
         print('End alpha non linear: {}'.format(self.alpha_non_linear))
-        plotter.create_plot_ej2(error_per_epoch_linear, test_error_per_epoch_linear, linear=True)
-        plotter.create_plot_ej2(error_per_epoch_non_linear, test_error_per_epoch_non_linear, linear=False)
+        print('***************************************')
+        self.test_perceptron(test_data_linear, w_min_linear, linear=True, max_out=None, min_out=None, print_=True)
+        print('***************************************')
+        self.test_perceptron(test_data_non_linear, w_min_non_linear, linear=False, max_out=max_, min_out=min_, print_=True)
+        print('***************************************')
+        plotter.create_plot_ej2(error_per_epoch_linear, test_error_per_epoch_linear, alpha_per_epoch_linear, linear=True)
+        plotter.create_plot_ej2(error_per_epoch_non_linear, test_error_per_epoch_non_linear, alpha_per_epoch_non_linear, linear=False)
         return
 
     def test_perceptron(self, test_data, weights, linear, max_out, min_out, print_):
         if print_: print('Testing perceptron {}...'.format(('linear' if linear else 'non linear')))
-        element_count = 0
         error = 0.0
+        error_accum = 0.0
         if print_:
             print('+-------------------+-------------------+')
             print('|   Desired output  |   Perceptron out  |')
@@ -137,18 +146,22 @@ class SimplePerceptronEj2:
         for row in test_data:
             sumatoria = self.get_sum(row[:-1], weights)
             perceptron_output = self.get_activation(sumatoria, linear=linear)
-            element_count += 1
             if not linear:
                 denorm_real = self.denormalize(row[-1], max_out, min_out)
                 denorm_perc = self.denormalize(perceptron_output, max_out, min_out)
                 if print_: print('|{:19f}|{:19f}|'.format(denorm_real, denorm_perc))
+                diff = denorm_real - denorm_perc
+                error_accum += abs(diff)
+                error += (diff)**2
             else:
                 if print_: print('|{:19f}|{:19f}|'.format(row[-1], perceptron_output))
-            error += (row[-1] - perceptron_output)**2
-        
+                diff = row[-1] - perceptron_output
+                error_accum += abs(diff)
+                error += (diff)**2
         if print_: 
             print('+-------------------+-------------------+')
             print('Test finished')
+            print('Error avg {}: {}'.format('linear' if linear else 'non linear', error_accum/len(test_data)))
         return error/len(test_data)
 
     def denormalize(self, x, max_, min_):
