@@ -3,7 +3,7 @@
     "FUNCTION":"XOR",
     "LEARNING_RATE":0.01,
     "ADAPTIVE_LEARNING_RATE":"TRUE",
-    "BETA": 0.5,
-    "EPOCHS":100,
+    "BETA": 2,
+    "EPOCHS":200,
     "ERROR_TOLERANCE":0
 }

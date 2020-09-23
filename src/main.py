@@ -23,7 +23,7 @@ if(perceptron == 'SIMPLE'):
     else:
         p = SimplePerceptron(alpha=alpha, iterations=epochs, adaptive=adaptive)
 else:
-    p = MultiLayerPerceptron(alpha=alpha, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance, adaptive=True)
+    p = MultiLayerPerceptron(alpha=alpha, beta=beta, iterations=epochs, hidden_layers=1, error_tolerance=error_tolerance, adaptive=True)
 
 p.algorithm(operand)
 

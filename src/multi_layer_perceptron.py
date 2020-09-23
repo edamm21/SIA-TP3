@@ -7,8 +7,9 @@ from plotter import Plotter
 
 class MultiLayerPerceptron:
 
-    def __init__(self, alpha=0.01, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False):
+    def __init__(self, alpha=0.01, beta=2.0, iterations=100, hidden_layers=1, error_tolerance=0.01, adaptive=False):
         self.alpha = alpha
+        self.beta = beta
         self.initial_alpha = alpha
         self.iterations = iterations
         self.adaptive = adaptive
@@ -31,18 +32,12 @@ class MultiLayerPerceptron:
             else:
                 self.alpha -= 0.01 * self.alpha
 
-    def error_function(self, sqr_errors_sum):
-        if isinstance(sqr_errors_sum, list):
-            return (0.5 * (sqr_errors_sum))[0] 
-        else:
-            return 0.5 * (sqr_errors_sum)
-
     def g(self, x):
-        return np.tanh(2 * x)
+        return np.tanh(self.beta * x)
  
     def g_derivative(self, x):
-        cosh2 = np.cosh(2*x) * np.cosh(2*x)
-        return 2.0 / cosh2
+        cosh2 = np.cosh(self.beta*x) ** 2
+        return self.beta / cosh2
 
     def h(self, m, i, amount_of_nodes, W, V):
         hmi = 0
@@ -75,7 +70,7 @@ class MultiLayerPerceptron:
                 self.W[1,dest,orig] = w[dest,orig]
         
         error_min = len(data)*2
-        positivity_margin = 0.75
+        positivity_margin = 0.95
         total_error = 1
         error_per_epoch = []
         worst_error_per_epoch = []
