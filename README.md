@@ -95,8 +95,8 @@ Opciones posibles para los campos del archivo de configuración
 |       ADAPTIVE_LEARNING_RATE       |                             TRUE / FALSE                             | Determina si el perceptrón adapta su tasa de aprendizaje en base al error por épocas |
 | BETA | VALOR NUMÉRICO                                | Determina el término beta presente en la función logística o tanh de los perceptrones simples no lineales o multicapa |
 | EPOCHS     |                             VALOR NUMÉRICO                             | Determina la máxima cantidad de épocas con las que se entrenará al perceptrón                                      |
-|ERROR_TOLERANCE            |                                 VALOR NUMÉRICO                                | |
-|           CLASSIFICATION_MARGIN           |                                 VALOR_NUMÉRICO                                 ||
+| ERROR_TOLERANCE            |                                 VALOR NUMÉRICO                                | Define la cota de error máximo para terminar el entrenamiento antes de tiempo |
+|           CLASSIFICATION_MARGIN           |                                 VALOR_NUMÉRICO                                 | Define el margen de error utilizado en el ejercicio 3 para clasificar un valor como preciso. Se utiliza para determinar el accuracy y debe estar entre 0 (estricto) y 1 (binario y flexible) |
 | HIDDEN_LAYERS | VALOR NUMÉRICO | Especifica la cantidad de capas ocultas para el perceptrón multicapa|
 | NODES_PER_LAYER | VALOR NUMÉRICO | Especifica la cantidad de nodos por capa para el perceptrón multicapa|
-| TRAINING_SET_SIZE_EX_2 | VALOR NUMÉRICO | Especifica la cantidad de individuos a seleccionar para entrenar a la red del ejercicio 2, dejando el resto para testear a la misma |
+| TRAINING_SET_SIZE | VALOR NUMÉRICO | Especifica la cantidad de individuos a seleccionar de los archivos para entrenar a la red en los ejercicios 2 y 3, dejando el resto para testear a la misma |
